@@ -1,0 +1,17 @@
+#DO NOT CHANGE
+
+RewriteEngine On
+
+RewriteBase /rex/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+
+RewriteRule ^(.*)$ index.php?trace=$1 [L,QSA]
+
+
+<Files *.tpl>
+order deny,allow
+deny from all
+</Files>
+
