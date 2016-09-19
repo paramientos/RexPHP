@@ -1,3 +1,3 @@
+OOOOOOPSS!
 
-
-This is the 404 page located at <?php echo __FILE__;?>
+This is the 404 page located at <?php echo __FILE__; ?>

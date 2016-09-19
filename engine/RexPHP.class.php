@@ -1,83 +1,107 @@
 <?php
 
 /**
- *      REX
- * A STATE OF PHP
- * Make PHP Great Again
+ *      The Rex PHP Framework
+ *         A STATE OF PHP
+ *       Make PHP Great Again
  * 
+ * @author     Soysal Tan
+ * @license MIT License https://github.com/soysaltan/Rex/blob/master/LICENSE
+ * @copyright  2013 - 2016 Soysal Tan
+ * @category PHP Framework
+ * @see https://github.com/soysaltan/Rex
+ * @version 1.1.6
+ * 
+ * @uses Lex PHP Template Parser
+ * @author     Dan Horrigan
+ * @license    MIT License
+ * @copyright  2011 - 2012 Dan Horrigan
+ * @see https://github.com/pyrocms/lex
+ * 
+ * @uses Medoo The lightest PHP database framework
+ * @see http://medoo.in/
+ * @license Medoo is under MIT license http://medoo.in/about
+ * @author Angel Lai
+ * @link https://github.com/catfan/Medoo
  * 
  */
 class Rex {
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $bag array 
      */
     protected $bag = array();
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $model string 
      */
     protected $model;
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $model_ext string 
      */
     protected $model_ext = '.php';
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $view string 
      */
     protected $view;
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $headerFile string 
      */
     protected $headerFile;
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $footerFile string 
      */
     protected $footerFile;
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $controller_ext string 
      */
     protected $controller_ext = '.php';
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $helper_ext string 
      */
     protected $helper_ext = '.php';
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $import_ext string 
      */
     protected $import_ext = '.php';
 
     /**
-     *
-     * @var type 
+     * @access protected
+     * @var $import_suffix string 
      */
     protected $import_suffix = '.class';
 
     /**
-     *
-     * @var type 
+     * @access public
+     * @var $db object 
      */
     public $db;
 
     /**
+     * DB drivers can be inserted from the root/driver folder.
      * 
-     * @return \rex
+     * Usage :  $this->db() // initialize the db class
+     *          $this->db->query("select * from table"); @see the root/driver/drivername.ext file
+     * 
+     * @access public
+     * @see root/config.php file for the database_type constant
+     * @return DB object
      */
     public function db() {
         include_once ROOT . DS . 'driver' . DS . database_type . '.php';
@@ -87,9 +111,19 @@ class Rex {
     }
 
     /**
+     * Call the model method.
      * 
-     * @param type $model
-     * @return \rex
+     * Seeks : root/app/model/path/to/modelname.ext
+     * 
+     * Usage   :    $this->model('dir/file'); 
+     *              $this->model_dir_file->method();
+     * 
+     * Example :    $this->model('user/user'); 
+     *              $this->model_user_user->get_users();
+     * 
+     * @access public 
+     * @param string $model example : 'user/user'
+     * @return object Returns the model object
      */
     public function model($model) {
         $model_exp = explode('/', $model);
@@ -120,12 +154,15 @@ class Rex {
     }
 
     /**
+     * Render the template with header and footer pages
      * 
-     * @global type $data
-     * @param type $view
-     * @param type $datas
+     * @access public 
+     * @global array $data
+     * @param string $template The template file without extension
+     * @param array $datas Viewbag
+     * @return string as HTML
      */
-    public function view($template = null, $datas = null) {
+    public function view($template = null, $datas = array()) {
 
         $this->headerFile = ROOT . DS . 'app' . DS . 'view' . DS . 'theme' . DS . THEME_NAME . DS . 'template' . DS . str_replace('/', DS, HEADER_FILE) . TEMPLATE_EXTENSION;
         $this->footerFile = ROOT . DS . 'app' . DS . 'view' . DS . 'theme' . DS . THEME_NAME . DS . 'template' . DS . str_replace('/', DS, FOOTER_FILE) . TEMPLATE_EXTENSION;
@@ -143,19 +180,7 @@ class Rex {
         $getFileName = &$trace[$count - 2];
         /*         * ***************************************************** */
         if ($template == null || $template == '')
-            $template = $getFileName; // $template'i direk cagir
-
-
-
-
-
-
-
-
-
-            
-//$viewExplode = explode('/', $view);
-
+            $template = $getFileName;
 
         if (isset($datas)) {
             global $data;
@@ -205,12 +230,14 @@ class Rex {
     }
 
     /**
+     * Render the template without header and footer pages
      * 
-     * @global type $data
-     * @param type $view
-     * @param type $datas
+     * @access public 
+     * @global array $data
+     * @param string $template The template file without extension
+     * @param array $datas Viewbag
      */
-    public function partial_view($view = null, $datas = null) {
+    public function partial_view($view = null, $datas = array()) {
 
 
 
@@ -249,9 +276,19 @@ class Rex {
     }
 
     /**
+     * Call the helper
      * 
-     * @param type $helper_name
-     * @return \rex
+     * Seeks : root/helper/helpername.ext
+     * 
+     * Usage   :    $this->helper('helper_name'); 
+     *              $this->helper_name->method();
+     * 
+     * Example :    $this->helper('str');
+     *              $this->str->format('Hello {0}','world'); // outputs Hello world 
+     * 
+     * @access public 
+     * @param string $helper_name the helper name to be called
+     * @return object usage : $this->helper_name->method();
      */
     public function helper($helper_name) {
         if (strpos($helper_name, ',') !== false) {
@@ -327,9 +364,19 @@ class Rex {
     }
 
     /**
+     * Call the library
      * 
-     * @param type $library_name
-     * @return \rex
+     * Seeks : root/library/libraryname.ext
+     * 
+     * Usage   :    $this->import('import_name'); 
+     *              $this->import_name->method();
+     * 
+     * Example :    $this->import('lex');
+     *              $this->lex->render('common/home');
+     * 
+     * @access public 
+     * @param string $library_name the library name to be called
+     * @return object usage : $this->library_name->method();
      */
     public function import($library_name) {
         if (strpos($library_name, ',') !== false) {
@@ -364,9 +411,19 @@ class Rex {
     }
 
     /**
+     * Call the controller method.This is just like the calling a method in PHP
      * 
-     * @param type $controller
-     * @param type $args
+     * Seeks : root/app/controller/path/to/controllername.ext
+     * 
+     * Usage   :    $this->call('dir/file',array('id'=>6); 
+     * 
+     * Example :    $this->call('common/home',array('id'=>6); 
+     *              //goes to the route -> common/home/6 or index.php?trace=common/home/6
+     *              $this->lex->render('common/home');
+     *
+     * @access public 
+     * @param string $controller example : 'common/home'
+     * @param array $args post and get parameters as string
      */
     public function call($controller, $args = array()) {
         $gets = explode('/', $controller);
@@ -419,20 +476,30 @@ class Rex {
     }
 
     /**
-     * 
+     * @access public 
+     * SILENCE IS GOLDEN
      */
     public function rex() {
+        $this->ladies_first();
+    }
+
+    /**
+     * Load the initial helpers or etc.
+     * Rex looks here firstly
+     * @access public 
+     */
+    public function ladies_first() {
         register_shutdown_function("fatal_handler");
-        if (file_exists(ROOT . DS . 'init.php'))
+        if (file_exists(ROOT . DS . 'init.php')) {
             include ROOT . DS . 'init.php';
+        }
     }
 
 }
 
-//end class
-
 /**
- * 
+ *
+ * @internal Custom error handler
  */
 function fatal_handler() {
     $errorFile = "unknown file";
@@ -455,12 +522,13 @@ function fatal_handler() {
 }
 
 /**
- * 
- * @param type $errorMessage
- * @param type $file
- * @param type $line
- * @param type $error
- * @return type
+ * @internal Custom error handling
+ * This is used in Rex
+ * @param string $errorMessage
+ * @param string $file
+ * @param string $line
+ * @param string $error
+ * @return string
  */
 function format_error($errorMessage, $file, $line, $error) {
     if (SHOW_ERROR) {

@@ -2,7 +2,7 @@
 
 /**
  * Lex Template Parser and REXPHP combination.
- * If you want to use Lex Template Engine you can call this from REXPHP 
+ * If you want to use Lex Template Parser, you can call this from Rex 
  * Usage : $this->import('lex');
  *         $this->lex->render('common/home');
  * @author     Dan Horrigan
