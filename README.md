@@ -7,7 +7,9 @@ Moreover Rex uses ORM as Medoo ORM Framework.
 
 ### Introduction
 
-RexPHP is a free, open source, fast, lightweight PHP development framework simple object-oriented, founded in early 2013, following the release Apache2 open source license, to agile WEB application development and simplify enterprise application development and birth. ThinkPHP since its inception has been adhering to the simple and practical design principles, while maintaining excellent performance and simple to code, but also focus on ease of use. 
+RexPHP is a free, open source, fast, lightweight PHP development framework simple object-oriented, founded in early 2013, following the release MIT open source license, 
+to agile web application development and simplify enterprise application development and birth. RexPHP since its inception has been adhering to the simple and
+ practical design principles, while maintaining excellent performance and simple to code, but also focus on ease of use. 
 
 The latest RexPHP provide strong support for web application development support includes:
 
