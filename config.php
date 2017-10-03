@@ -2,10 +2,10 @@
 
 
 define('database_type', 'mysqli');
-define('database_name', 'fuary');
+define('database_name', '');
 define('server', 'localhost');
-define('username', 'root');
-define('password', '123');
+define('username', '');
+define('password', '');
 define('charset', 'utf8');
 // optional
 define('port', 3306);
