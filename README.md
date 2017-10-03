@@ -1,4 +1,4 @@
-### The Rex PHP Framework - Make PHP Greate Again.
+### The Rex PHP Framework - Make PHP Great Again
 
 Rex is a PHP framework that you secretes happiness hormone (aka endorphin).
 
