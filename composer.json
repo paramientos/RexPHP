@@ -2,6 +2,7 @@
     "name": "sosi/rex",
     "description": "The Rex PHP Framework - Make PHP Great Again",
     "type": "library",
+    "version: "1.1.8",
     "license": "MIT",
     "authors": [
         {
