@@ -1,0 +1,13 @@
+{
+    "name": "sosi/rex",
+    "description": "Rex PHP Framework - Make PHP Great Again",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Soysal Tan",
+            "email": "soysaltann@gmail.com"
+        }
+    ],
+    "require": {}
+}
