@@ -2,6 +2,7 @@
     "name": "sosi/rex",
     "description": "The Rex PHP Framework - Make PHP Great Again",
     "type": "library",
+    "keywords": ["template","parser"],
     "license": "MIT",
     "authors": [
         {
@@ -9,5 +10,7 @@
             "email": "soysaltann@gmail.com"
         }
     ],
-    "require": {}
+     "require": {
+        "php": ">=5.3.0"
+    }
 }
