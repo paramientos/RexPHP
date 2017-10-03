@@ -3,7 +3,7 @@
     "description": "The Rex PHP Framework - Make PHP Great Again",
     "type": "library",
     "keywords": ["template","parser"],
-    "minimum-stability": "1.1.8",
+    "minimum-stability": 1.1.8,
     "license": "MIT",
     "authors": [
         {
