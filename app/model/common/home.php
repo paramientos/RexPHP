@@ -2,8 +2,8 @@
 
 class CommonHomeModel extends Rex {
 
-    function get_foos() {
-        return "";
+    function get_foo() {
+        return "foo";
     }
 
 }
