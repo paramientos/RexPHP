@@ -1,9 +1,8 @@
 <?php
 
-$this->db();
-//$this->import('lang');
+// if you need to connect to a database, you need to uncomment this
+//$this->db();
 $this->helper('request');
-//$this->helper('str');
 $this->helper('url');
 $this->helper('session');
 ?>
