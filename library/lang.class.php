@@ -1,7 +1,7 @@
 <?php
 
 /* * ************************************************************ */
-/* Translations - a PHP translation library 
+/* Translations - a PHP translation library
 
   Software License Agreement (BSD License)
 
@@ -16,7 +16,7 @@
  * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
- * Neither the name of Edward Eliot nor the names of its contributors 
+ * Neither the name of Edward Eliot nor the names of its contributors
   may be used to endorse or promote products derived from this software
   without specific prior written permission of Edward Eliot.
 
@@ -37,24 +37,25 @@
 
 define('TRANSLATIONS_DEFAULT_LANG', 'en');
 define('TRANSLATIONS_EXT', 'tpl');
-define('TRANSLATIONS_PATH', ROOT . DS . 'app' . DS . 'language' . DS);
-define('TRANSLATIONS_CACHE', ROOT . DS . 'app' . DS . 'cache' . DS);
+define('TRANSLATIONS_PATH', ROOT.DS.'app'.DS.'language'.DS);
+define('TRANSLATIONS_CACHE', ROOT.DS.'app'.DS.'cache'.DS);
 define('TRANSLATIONS_ALLOW_SHOW_KEYS', true);
 
-class Lang extends Rex {
-
+class Lang extends Rex
+{
     protected $sFile;
     protected $sCacheFile;
-    protected $aTranslations = array();
+    protected $aTranslations = [];
 
-    public function __construct($sLang = TRANSLATIONS_DEFAULT_LANG, $sTranslationsPath = TRANSLATIONS_PATH) {
+    public function __construct($sLang = TRANSLATIONS_DEFAULT_LANG, $sTranslationsPath = TRANSLATIONS_PATH)
+    {
         // set up file paths
-        $this->sFile = TRANSLATIONS_PATH . "$sLang." . TRANSLATIONS_EXT;
-        $this->sCacheFile = TRANSLATIONS_CACHE . md5($sLang) . '.cache';
+        $this->sFile = TRANSLATIONS_PATH."$sLang.".TRANSLATIONS_EXT;
+        $this->sCacheFile = TRANSLATIONS_CACHE.md5($sLang).'.cache';
 
         // fallback to default language if current doesn't exist
         if (!file_exists($this->sFile)) {
-            $this->sFile = TRANSLATIONS_PATH . TRANSLATIONS_DEFAULT_LANG . '.' . TRANSLATIONS_EXT;
+            $this->sFile = TRANSLATIONS_PATH.TRANSLATIONS_DEFAULT_LANG.'.'.TRANSLATIONS_EXT;
         }
 
         // after first pass translations are stored in serialised PHP array for speed
@@ -75,17 +76,18 @@ class Lang extends Rex {
         }
     }
 
-    protected function process() {
+    protected function process()
+    {
         // create array for serialising
-        $aCache = array();
+        $aCache = [];
 
         // read translation file into array
         $aFile = file($this->sFile);
 
         // does this translation file inherit from another
-        $aInheritsMatches = array();
+        $aInheritsMatches = [];
         if (isset($aFile[0]) && preg_match("/^\s*{inherits\s+([^}]+)}.*$/", $aFile[0], $aInheritsMatches)) {
-            $sParentFile = TRANSLATIONS_PATH . trim($aInheritsMatches[1]) . '.' . TRANSLATIONS_EXT;
+            $sParentFile = TRANSLATIONS_PATH.trim($aInheritsMatches[1]).'.'.TRANSLATIONS_EXT;
             // read parent file into array
             $aParentFile = file($sParentFile);
             // merge lines from parent file into main file array, lines in the main file override lines in the parent
@@ -98,7 +100,7 @@ class Lang extends Rex {
 
         // read language array line by line
         foreach ($aFile as $sLine) {
-            $aTranslationMatches = array();
+            $aTranslationMatches = [];
 
             // match valid translations, strip comments - both on their own lines and at the end of a translation
             // literal hashes (#) should be escaped with a backslash
@@ -114,7 +116,8 @@ class Lang extends Rex {
         file_put_contents($this->sCacheFile, serialize($aCache));
     }
 
-    public function get($sKey) {
+    public function get($sKey)
+    {
         $sTranslation = '';
 
         if (array_key_exists($sKey, $this->aTranslations)) { // key / value pair exists
@@ -126,13 +129,13 @@ class Lang extends Rex {
                 $vFirstArg = func_get_arg(1);
                 if (is_array($vFirstArg)) { // named substitution variables
                     foreach ($vFirstArg as $sKey => $sValue) {
-                        $sTranslation = str_replace('{' . $sKey . '}', $sValue, $sTranslation);
+                        $sTranslation = str_replace('{'.$sKey.'}', $sValue, $sTranslation);
                     }
                 } else { // numbered substitution variables
                     for ($i = 1; $i < $iNumArgs; $i++) {
                         $sParam = func_get_arg($i);
                         // replace current substitution marker with value
-                        $sTranslation = str_replace('{' . ($i - 1) . '}', $sParam, $sTranslation);
+                        $sTranslation = str_replace('{'.($i - 1).'}', $sParam, $sTranslation);
                     }
                 }
             }
@@ -147,7 +150,4 @@ class Lang extends Rex {
         // key / value doesn't exist, show the key instead
         return $sKey;
     }
-
 }
-
-?>

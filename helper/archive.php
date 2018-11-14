@@ -4,19 +4,18 @@
  * zip : taken from http://stackoverflow.com/questions/4914750/how-to-zip-a-whole-folder-using-php
  * add some usefull codes by me
  * unzip : Author : Subranil Dalal
- * http://burnignorance.com/php-programming-tips/php-class-for-unzipping-zip-file-on-linuxwindows/
+ * http://burnignorance.com/php-programming-tips/php-class-for-unzipping-zip-file-on-linuxwindows/.
  */
-class archive {
-
+class archive
+{
     /**
-     * 
      * @param type $to_zip
      * @param type $zipFile
      */
-    function zip($to_zip, $zipFile = "zipped.zip") {
+    public function zip($to_zip, $zipFile = 'zipped.zip')
+    {
         $zip = new ZipArchive();
         $zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-
 
         if (is_array($to_zip)) {
             foreach ($to_zip as $to_zip_one) {
@@ -78,7 +77,8 @@ class archive {
         }
     }
 
-    function unzip($sourceFileName, $destinationPath = null) {
+    public function unzip($sourceFileName, $destinationPath = null)
+    {
         $destinationPath = $destinationPath == null ? substr($sourceFileName, 0, -4) : $destinationPath; //remove ext -> .zip
         if (stristr(PHP_OS, 'WIN')) {
             $this->unzip_on_win($sourceFileName, $destinationPath);
@@ -89,46 +89,48 @@ class archive {
 
     /**
      * Function: unzip_on_win($sourceFileName,$destinationPath)
-     * Unzipping a zip file on windows
-     * @param string $sourceFileName, source zip file name with absolute path
+     * Unzipping a zip file on windows.
+     *
+     * @param string $sourceFileName,  source zip file name with absolute path
      * @param string $destinationPath, destination fath for unzipped file (absolute path)
      */
-    function unzip_on_win($sourceFileName, $destinationPath) {
+    public function unzip_on_win($sourceFileName, $destinationPath)
+    {
         $directoryPos = strrpos($sourceFileName, '/');
         $directory = substr($sourceFileName, 0, $directoryPos + 1);
-        if (file_exists($directory))
+        if (file_exists($directory)) {
             $dir = opendir($directory);
+        }
         $info = pathinfo($sourceFileName);
         if (strtolower($info['extension']) == 'zip') {
-            $zip = new ZipArchive;
+            $zip = new ZipArchive();
             $response = $zip->open($sourceFileName);
-            if ($response === TRUE) {
+            if ($response === true) {
                 $zip->extractTo($destinationPath);
                 $zip->close();
             }
         }
-        if ($directoryPos)
+        if ($directoryPos) {
             closedir($dir);
+        }
     }
 
     /**
      * Function: unzip_on_linux($sourceFileName,$destinationPath)
-     * Unzipping a zip file on linux
-     * @param string $sourceFileName, source zip file name with absolute path
+     * Unzipping a zip file on linux.
+     *
+     * @param string $sourceFileName,  source zip file name with absolute path
      * @param string $destinationPath, destination fath for unzipped file (absolute path)
      */
-    function unzip_on_linux($sourceFileName, $destinationPath) {
-
+    public function unzip_on_linux($sourceFileName, $destinationPath)
+    {
         $directoryPos = strrpos($sourceFileName, '/');
         $directory = substr($sourceFileName, 0, $directoryPos + 1);
         $dir = opendir($directory);
         $info = pathinfo($sourceFileName);
         if (strtolower($info['extension']) == 'zip') {
-            system('unzip -q ' . $sourceFileName . '  -d ' . $destinationPath);
+            system('unzip -q '.$sourceFileName.'  -d '.$destinationPath);
         }
         closedir($dir);
     }
-
 }
-
-?>

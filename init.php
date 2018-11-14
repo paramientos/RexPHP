@@ -5,4 +5,3 @@
 $this->helper('request');
 $this->helper('url');
 $this->helper('session');
-?>

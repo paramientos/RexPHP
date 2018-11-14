@@ -1,21 +1,25 @@
 <?php
 
-class math {
-
-    function is_odd_even($number) {
-        return ($number & 1) ? "odd" : "even";
+class math
+{
+    public function is_odd_even($number)
+    {
+        return ($number & 1) ? 'odd' : 'even';
     }
 
     /**
      * The function (Mean, Median, Mode, Range) will calculate the Mean, Median, Mode, or Range of an array.
-      The function automatically defaults to Mean (average).
+     * The function automatically defaults to Mean (average).
+     *
      * @param type $array
      * @param type $output
+     *
      * @return boolean
      */
-    function sta($array, $output = 'mean') {
+    public function sta($array, $output = 'mean')
+    {
         if (!is_array($array)) {
-            return FALSE;
+            return false;
         } else {
             switch ($output) {
                 case 'mean':
@@ -44,8 +48,8 @@ class math {
                     $total = $lrg - $sml;
                     break;
             }
+
             return $total;
         }
     }
-
 }

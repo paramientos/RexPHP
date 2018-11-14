@@ -1,31 +1,34 @@
 <?php
 
-class image {
-
-    function save_remote_image($remote, $local) {
+class image
+{
+    public function save_remote_image($remote, $local)
+    {
         copy($remote, $local);
     }
 
     /**
-     * 
      * @param type $url
+     *
      * @return type
      */
-    function uri($url) {
+    public function uri($url)
+    {
         $type = pathinfo($url, PATHINFO_EXTENSION);
         $data = file_get_contents($url);
-        return 'data:image/' . $type . ';base64,' . base64_encode($data);
+
+        return 'data:image/'.$type.';base64,'.base64_encode($data);
     }
 
     /**
-     * 
      * @param type $file
      * @param type $save_to -> must end / (slashes) if the resized image will be putting to a dir
      * @param type $w
      * @param type $h
      * @param type $crop
      */
-    function resize($file, $save_to = '', $w = 150, $h = 150, $crop = FALSE) {
+    public function resize($file, $save_to = '', $w = 150, $h = 150, $crop = false)
+    {
         if (!file_exists($save_to) && $save_to != '') {
             mkdir($save_to);
         }
@@ -50,25 +53,22 @@ class image {
         }
         $p = pathinfo($file);
 
-        if ($p['extension'] == "jpg" || $p['extension'] == "jpeg") {
+        if ($p['extension'] == 'jpg' || $p['extension'] == 'jpeg') {
             $src = imagecreatefromjpeg($file);
-        } else if ($p['extension'] == "png") {
+        } elseif ($p['extension'] == 'png') {
             $src = imagecreatefrompng($file);
-        } else if ($p['extension'] == "gif") {
+        } elseif ($p['extension'] == 'gif') {
             $src = imagecreatefromgif($file);
         }
         $dst = imagecreatetruecolor($newwidth, $newheight);
         imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
 
-        if ($p['extension'] == "jpg" || $p['extension'] == "jpeg") {
-            imagejpeg($dst, substr($file, 0, strlen($p['extension'])) . "_resized." . $p['extension']);
-        } else if ($p['extension'] == "png") {
-            imagepng($dst, $save_to . substr($file, 0, strlen($p['extension'])) . "_resized." . $p['extension']);
-        } else if ($p['extension'] == "gif") {
-            imagegif($dst, substr($file, 0, strlen($p['extension'])) . "_resized." . $p['extension']);
+        if ($p['extension'] == 'jpg' || $p['extension'] == 'jpeg') {
+            imagejpeg($dst, substr($file, 0, strlen($p['extension'])).'_resized.'.$p['extension']);
+        } elseif ($p['extension'] == 'png') {
+            imagepng($dst, $save_to.substr($file, 0, strlen($p['extension'])).'_resized.'.$p['extension']);
+        } elseif ($p['extension'] == 'gif') {
+            imagegif($dst, substr($file, 0, strlen($p['extension'])).'_resized.'.$p['extension']);
         }
     }
-
 }
-
-?>

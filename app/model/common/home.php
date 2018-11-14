@@ -1,9 +1,9 @@
 <?php
 
-class CommonHomeModel extends Rex {
-
-    function get_foo() {
-        return "foo";
+class CommonHomeModel extends Rex
+{
+    public function get_foo()
+    {
+        return 'foo';
     }
-
 }

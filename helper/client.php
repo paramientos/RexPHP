@@ -1,11 +1,10 @@
 <?php
 
-class client {
-
- 
-
-        function get_client_language() {
-            $all_langs = array(
+class client
+{
+    public function get_client_language()
+    {
+        $all_langs = [
                 'aa' => 'Afar',
                 'ab' => 'Abkhaz',
                 'ae' => 'Avestan',
@@ -190,26 +189,26 @@ class client {
                 'za' => 'Zhuang, Chuang',
                 'zh' => 'Chinese',
                 'zu' => 'Zulu',
-            );
-            if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-                $langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            ];
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $langs = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 
-                foreach ($langs as $value) {
-                    $choice = substr($value, 0, 2);
-                    if (in_array($choice, array_keys($all_langs))) {
-                        return array($choice, $all_langs[$choice]);
-                    }
+            foreach ($langs as $value) {
+                $choice = substr($value, 0, 2);
+                if (in_array($choice, array_keys($all_langs))) {
+                    return [$choice, $all_langs[$choice]];
                 }
             }
-            return false;
         }
 
-        function get_real_ip() {
-            $ipaddress = '';
-            $ipaddress = str_replace(" ", "", trim(file_get_contents("http://bot.whatismyipaddress.com")));
-            return $ipaddress;
-        }
-
+        return false;
     }
 
-?>
+    public function get_real_ip()
+    {
+        $ipaddress = '';
+        $ipaddress = str_replace(' ', '', trim(file_get_contents('http://bot.whatismyipaddress.com')));
+
+        return $ipaddress;
+    }
+}

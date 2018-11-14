@@ -9,10 +9,10 @@
  */
 
 /**
- *  extends to rex this is because use some features of RexPHP
+ *  extends to rex this is because use some features of RexPHP.
  */
-class Parser extends Rex {
-
+class Parser extends Rex
+{
     protected $allowPhp = false;
     protected $regexSetup = false;
     protected $scopeGlue = '.';
@@ -28,27 +28,30 @@ class Parser extends Rex {
     protected $conditionalRegex = '';
     protected $conditionalElseRegex = '';
     protected $conditionalEndRegex = '';
-    protected $conditionalData = array();
-    protected static $extractions = array(
-        'noparse' => array(),
-    );
+    protected $conditionalData = [];
+    protected static $extractions = [
+        'noparse' => [],
+    ];
     protected static $data = null;
-    protected static $callbackData = array();
+    protected static $callbackData = [];
 
     /**
      * The main Lex parser method.  Essentially acts as dispatcher to
      * all of the helper parser methods.
      *
-     * @param  string       $template     template to parse
-     * @param  array|object $data     Array or object to use
-     * @param  mixed        $callback Callback to use for Callback Tags
+     * @param string       $template template to parse
+     * @param array|object $data     Array or object to use
+     * @param mixed        $callback Callback to use for Callback Tags
+     *
      * @return string
      */
-    public function parse($template, $data = array(), $callback = false, $allowPhp = false) {
+    public function parse($template, $data = [], $callback = false, $allowPhp = false)
+    {
 
         // check wheter the template exists
-        if (!file_exists($template))
+        if (!file_exists($template)) {
             return trigger_error("Template doesn't exists");
+        }
 
         $text = file_get_contents($template);
 
@@ -77,7 +80,7 @@ class Parser extends Rex {
 
         // The parseConditionals method executes any PHP in the text, so clean it up.
         if (!$allowPhp) {
-            $text = str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $text);
+            $text = str_replace(['<?', '?>'], ['&lt;?', '?&gt;'], $text);
         }
 
         $text = $this->parseComments($text);
@@ -108,10 +111,12 @@ class Parser extends Rex {
     /**
      * Removes all of the comments from the text.
      *
-     * @param  string $text Text to remove comments from
+     * @param string $text Text to remove comments from
+     *
      * @return string
      */
-    public function parseComments($text) {
+    public function parseComments($text)
+    {
         $this->setupRegex();
 
         return preg_replace('/\{\{#.*?#\}\}/s', '', $text);
@@ -121,11 +126,13 @@ class Parser extends Rex {
      * Recursivly parses all of the variables in the given text and
      * returns the parsed text.
      *
-     * @param  string       $text Text to parse
-     * @param  array|object $data Array or object to use
+     * @param string       $text Text to parse
+     * @param array|object $data Array or object to use
+     *
      * @return string
      */
-    public function parseVariables($text, $data, $callback = null) {
+    public function parseVariables($text, $data, $callback = null)
+    {
         $this->setupRegex();
 
         /**
@@ -134,13 +141,13 @@ class Parser extends Rex {
          * $data_matches[][1][0] is the data variable (dot notated)
          * $data_matches[][1][1] is the offset of data variable
          * $data_matches[][2][0] is the content to be looped over
-         * $data_matches[][2][1] is the offset of content to be looped over
+         * $data_matches[][2][1] is the offset of content to be looped over.
          */
         if (preg_match_all($this->variableLoopRegex, $text, $data_matches, PREG_SET_ORDER + PREG_OFFSET_CAPTURE)) {
             foreach ($data_matches as $index => $match) {
                 if ($loop_data = $this->getVariable($match[1][0], $data)) {
                     $looped_text = '';
-                    if (is_array($loop_data) or ( $loop_data instanceof \IteratorAggregate)) {
+                    if (is_array($loop_data) or ($loop_data instanceof \IteratorAggregate)) {
                         foreach ($loop_data as $item_data) {
                             $str = $this->extractLoopedTags($match[2][0], $item_data, $callback);
                             $str = $this->parseConditionals($str, $item_data, $callback);
@@ -153,7 +160,7 @@ class Parser extends Rex {
                             $looped_text .= $str;
                         }
                     }
-                    $text = preg_replace('/' . preg_quote($match[0][0], '/') . '/m', addcslashes($looped_text, '\\$'), $text, 1);
+                    $text = preg_replace('/'.preg_quote($match[0][0], '/').'/m', addcslashes($looped_text, '\\$'), $text, 1);
                 } else { // It's a callback block.
                     // Let's extract it so it doesn't conflict
                     // with the local scope variables in the next step.
@@ -164,7 +171,7 @@ class Parser extends Rex {
 
         /**
          * $data_matches[0] is the raw data tag
-         * $data_matches[1] is the data variable (dot notated)
+         * $data_matches[1] is the data variable (dot notated).
          */
         if (preg_match_all($this->variableTagRegex, $text, $data_matches)) {
             foreach ($data_matches[1] as $index => $var) {
@@ -180,19 +187,21 @@ class Parser extends Rex {
     /**
      * Parses all Callback tags, and sends them through the given $callback.
      *
-     * @param  string $text           Text to parse
-     * @param  mixed  $callback       Callback to apply to each tag
-     * @param  bool   $inConditional Whether we are in a conditional tag
+     * @param string $text          Text to parse
+     * @param mixed  $callback      Callback to apply to each tag
+     * @param bool   $inConditional Whether we are in a conditional tag
+     *
      * @return string
      */
-    public function parseCallbackTags($text, $data, $callback) {
+    public function parseCallbackTags($text, $data, $callback)
+    {
         $this->setupRegex();
         $inCondition = $this->inCondition;
 
         if ($inCondition) {
-            $regex = '/\{\s*(' . $this->variableRegex . ')(\s+.*?)?\s*\}/ms';
+            $regex = '/\{\s*('.$this->variableRegex.')(\s+.*?)?\s*\}/ms';
         } else {
-            $regex = '/\{\{\s*(' . $this->variableRegex . ')(\s+.*?)?\s*(\/)?\}\}/ms';
+            $regex = '/\{\{\s*('.$this->variableRegex.')(\s+.*?)?\s*(\/)?\}\}/ms';
         }
         /**
          * $match[0][0] is the raw tag
@@ -202,11 +211,11 @@ class Parser extends Rex {
          * $match[2][0] is the parameters
          * $match[2][1] is the offset of parameters
          * $match[3][0] is the self closure
-         * $match[3][1] is the offset of closure
+         * $match[3][1] is the offset of closure.
          */
         while (preg_match($regex, $text, $match, PREG_OFFSET_CAPTURE)) {
             $selfClosed = false;
-            $parameters = array();
+            $parameters = [];
             $tag = $match[0][0];
             $start = $match[0][1];
             $name = $match[1][0];
@@ -226,26 +235,25 @@ class Parser extends Rex {
             $content = '';
 
             $temp_text = substr($text, $start + strlen($tag));
-            if (preg_match('/\{\{\s*\/' . preg_quote($name, '/') . '\s*\}\}/m', $temp_text, $match, PREG_OFFSET_CAPTURE) && !$selfClosed) {
-
+            if (preg_match('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', $temp_text, $match, PREG_OFFSET_CAPTURE) && !$selfClosed) {
                 $content = substr($temp_text, 0, $match[0][1]);
-                $tag .= $content . $match[0][0];
+                $tag .= $content.$match[0][0];
 
                 // Is there a nested block under this one existing with the same name?
-                $nested_regex = '/\{\{\s*(' . preg_quote($name, '/') . ')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
-                if (preg_match($nested_regex, $content . $match[0][0], $nested_matches)) {
-                    $nested_content = preg_replace('/\{\{\s*\/' . preg_quote($name, '/') . '\s*\}\}/m', '', $nested_matches[0]);
+                $nested_regex = '/\{\{\s*('.preg_quote($name, '/').')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+                if (preg_match($nested_regex, $content.$match[0][0], $nested_matches)) {
+                    $nested_content = preg_replace('/\{\{\s*\/'.preg_quote($name, '/').'\s*\}\}/m', '', $nested_matches[0]);
                     $content = $this->createExtraction('nested_looped_tags', $nested_content, $nested_content, $content);
                 }
             }
 
-            $replacement = call_user_func_array($callback, array($name, $parameters, $content));
+            $replacement = call_user_func_array($callback, [$name, $parameters, $content]);
             $replacement = $this->parseRecursives($replacement, $content, $callback);
 
             if ($inCondition) {
                 $replacement = $this->valueToLiteral($replacement);
             }
-            $text = preg_replace('/' . preg_quote($tag, '/') . '/m', addcslashes($replacement, '\\$'), $text, 1);
+            $text = preg_replace('/'.preg_quote($tag, '/').'/m', addcslashes($replacement, '\\$'), $text, 1);
             $text = $this->injectExtractions($text, 'nested_looped_tags');
         }
 
@@ -255,12 +263,14 @@ class Parser extends Rex {
     /**
      * Parses all conditionals, then executes the conditionals.
      *
-     * @param  string $text     Text to parse
-     * @param  mixed  $data     Data to use when executing conditionals
-     * @param  mixed  $callback The callback to be used for tags
+     * @param string $text     Text to parse
+     * @param mixed  $data     Data to use when executing conditionals
+     * @param mixed  $callback The callback to be used for tags
+     *
      * @return string
      */
-    public function parseConditionals($text, $data, $callback) {
+    public function parseConditionals($text, $data, $callback)
+    {
         $this->setupRegex();
         preg_match_all($this->conditionalRegex, $text, $matches, PREG_SET_ORDER);
 
@@ -269,7 +279,7 @@ class Parser extends Rex {
         /**
          * $matches[][0] = Full Match
          * $matches[][1] = Either 'if', 'unless', 'elseif', 'elseunless'
-         * $matches[][2] = Condition
+         * $matches[][2] = Condition.
          */
         foreach ($matches as $match) {
             $this->inCondition = true;
@@ -290,14 +300,14 @@ class Parser extends Rex {
                     if ($this->getVariable($m[2], $data, '__doesnt_exist__') === '__doesnt_exist__') {
                         $exists = 'false';
                     }
-                    $condition = $this->createExtraction('__cond_exists', $m[0], $m[1] . $exists . $m[3], $condition);
+                    $condition = $this->createExtraction('__cond_exists', $m[0], $m[1].$exists.$m[3], $condition);
                 }
             }
 
-            $condition = preg_replace_callback('/\b(' . $this->variableRegex . ')\b/', array($this, 'processConditionVar'), $condition);
+            $condition = preg_replace_callback('/\b('.$this->variableRegex.')\b/', [$this, 'processConditionVar'], $condition);
 
             if ($callback) {
-                $condition = preg_replace('/\b(?!\{\s*)(' . $this->callbackNameRegex . ')(?!\s+.*?\s*\})\b/', '{$1}', $condition);
+                $condition = preg_replace('/\b(?!\{\s*)('.$this->callbackNameRegex.')(?!\s+.*?\s*\})\b/', '{$1}', $condition);
                 $condition = $this->parseCallbackTags($condition, $data, $callback);
             }
 
@@ -308,10 +318,9 @@ class Parser extends Rex {
                 }
             }
 
-
             // Re-process for variables, we trick processConditionVar so that it will return null
             $this->inCondition = false;
-            $condition = preg_replace_callback('/\b(' . $this->variableRegex . ')\b/', array($this, 'processConditionVar'), $condition);
+            $condition = preg_replace_callback('/\b('.$this->variableRegex.')\b/', [$this, 'processConditionVar'], $condition);
             $this->inCondition = true;
 
             // Re-inject any strings we extracted
@@ -321,16 +330,16 @@ class Parser extends Rex {
             $conditional = '<?php ';
 
             if ($match[1] == 'unless') {
-                $conditional .= 'if ( ! (' . $condition . '))';
+                $conditional .= 'if ( ! ('.$condition.'))';
             } elseif ($match[1] == 'elseunless') {
-                $conditional .= 'elseif ( ! (' . $condition . '))';
+                $conditional .= 'elseif ( ! ('.$condition.'))';
             } else {
-                $conditional .= $match[1] . ' (' . $condition . ')';
+                $conditional .= $match[1].' ('.$condition.')';
             }
 
             $conditional .= ': ?>';
 
-            $text = preg_replace('/' . preg_quote($match[0], '/') . '/m', addcslashes($conditional, '\\$'), $text, 1);
+            $text = preg_replace('/'.preg_quote($match[0], '/').'/m', addcslashes($conditional, '\\$'), $text, 1);
         }
 
         $text = preg_replace($this->conditionalElseRegex, '<?php else: ?>', $text);
@@ -345,12 +354,14 @@ class Parser extends Rex {
     /**
      * Goes recursively through a callback tag with a passed child array.
      *
-     * @param  string $text      - The replaced text after a callback.
-     * @param  string $orig_text - The original text, before a callback is called.
-     * @param  mixed  $callback
+     * @param string $text      - The replaced text after a callback.
+     * @param string $orig_text - The original text, before a callback is called.
+     * @param mixed  $callback
+     *
      * @return string $text
      */
-    public function parseRecursives($text, $orig_text, $callback) {
+    public function parseRecursives($text, $orig_text, $callback)
+    {
         // Is there a {{ *recursive [array_key]* }} tag here, let's loop through it.
         if (preg_match($this->recursiveRegex, $text, $match)) {
             $array_key = $match[1];
@@ -362,7 +373,7 @@ class Parser extends Rex {
 
             // Is the array not multi-dimensional? Let's make it multi-dimensional.
             if ($child_count == count($children, COUNT_RECURSIVE)) {
-                $children = array($children);
+                $children = [$children];
                 $child_count = 1;
             }
 
@@ -375,7 +386,7 @@ class Parser extends Rex {
                 // Does this child not contain any children?
                 // Let's set it as empty then to avoid any errors.
                 if (!array_key_exists($array_key, $child)) {
-                    $child[$array_key] = array();
+                    $child[$array_key] = [];
                     $has_children = false;
                 }
 
@@ -387,9 +398,9 @@ class Parser extends Rex {
 
                 // If this is the last loop set the next tag to be empty
                 // otherwise hash it.
-                $next_tag = ($count == $child_count) ? '' : md5($tag . $replacement);
+                $next_tag = ($count == $child_count) ? '' : md5($tag.$replacement);
 
-                $text = str_replace($current_tag, $replacement . $next_tag, $text);
+                $text = str_replace($current_tag, $replacement.$next_tag, $text);
 
                 if ($has_children) {
                     $text = $this->parseRecursives($text, $orig_text, $callback);
@@ -402,12 +413,14 @@ class Parser extends Rex {
     }
 
     /**
-     * Gets or sets the Scope Glue
+     * Gets or sets the Scope Glue.
      *
-     * @param  string|null $glue The Scope Glue
+     * @param string|null $glue The Scope Glue
+     *
      * @return string
      */
-    public function scopeGlue($glue = null) {
+    public function scopeGlue($glue = null)
+    {
         if ($glue !== null) {
             $this->regexSetup = false;
             $this->scopeGlue = $glue;
@@ -419,10 +432,12 @@ class Parser extends Rex {
     /**
      * Sets the noparse style. Immediate or cumulative.
      *
-     * @param  bool $mode
+     * @param bool $mode
+     *
      * @return void
      */
-    public function cumulativeNoparse($mode) {
+    public function cumulativeNoparse($mode)
+    {
         $this->cumulativeNoparse = $mode;
     }
 
@@ -433,13 +448,15 @@ class Parser extends Rex {
      * extractions and all noparse can then be injected right
      * before data is displayed.
      *
-     * @param  string $text Text to inject into
+     * @param string $text Text to inject into
+     *
      * @return string
      */
-    public static function injectNoparse($text) {
+    public static function injectNoparse($text)
+    {
         if (isset(self::$extractions['noparse'])) {
-            foreach (self::$extractions['noparse'] AS $hash => $replacement) {
-                if (strpos($text, "noparse_{$hash}") !== FALSE) {
+            foreach (self::$extractions['noparse'] as $hash => $replacement) {
+                if (strpos($text, "noparse_{$hash}") !== false) {
                     $text = str_replace("noparse_{$hash}", $replacement, $text);
                 }
             }
@@ -452,12 +469,14 @@ class Parser extends Rex {
      * This is used as a callback for the conditional parser.  It takes a variable
      * and returns the value of it, properly formatted.
      *
-     * @param  array  $match A match from preg_replace_callback
+     * @param array $match A match from preg_replace_callback
+     *
      * @return string
      */
-    protected function processConditionVar($match) {
+    protected function processConditionVar($match)
+    {
         $var = is_array($match) ? $match[0] : $match;
-        if (in_array(strtolower($var), array('true', 'false', 'null', 'or', 'and')) or
+        if (in_array(strtolower($var), ['true', 'false', 'null', 'or', 'and']) or
                 strpos($var, '__cond_str') === 0 or
                 strpos($var, '__cond_exists') === 0 or
                 is_numeric($var)) {
@@ -477,24 +496,28 @@ class Parser extends Rex {
      * This is used as a callback for the conditional parser.  It takes a variable
      * and returns the value of it, properly formatted.
      *
-     * @param  array  $match A match from preg_replace_callback
+     * @param array $match A match from preg_replace_callback
+     *
      * @return string
      */
-    protected function processParamVar($match) {
-        return $match[1] . $this->processConditionVar($match[2]);
+    protected function processParamVar($match)
+    {
+        return $match[1].$this->processConditionVar($match[2]);
     }
 
     /**
      * Takes a value and returns the literal value for it for use in a tag.
      *
-     * @param  string $value Value to convert
+     * @param string $value Value to convert
+     *
      * @return string
      */
-    protected function valueToLiteral($value) {
-        if (is_object($value) and is_callable(array($value, '__toString'))) {
+    protected function valueToLiteral($value)
+    {
+        if (is_object($value) and is_callable([$value, '__toString'])) {
             return var_export((string) $value, true);
         } elseif (is_array($value)) {
-            return !empty($value) ? "true" : "false";
+            return !empty($value) ? 'true' : 'false';
         } else {
             return var_export($value, true);
         }
@@ -505,27 +528,28 @@ class Parser extends Rex {
      *
      * @return void
      */
-    protected function setupRegex() {
+    protected function setupRegex()
+    {
         if ($this->regexSetup) {
             return;
         }
         $glue = preg_quote($this->scopeGlue, '/');
 
-        $this->variableRegex = $glue === '\\.' ? '[a-zA-Z0-9_' . $glue . ']+' : '[a-zA-Z0-9_\.' . $glue . ']+';
-        $this->callbackNameRegex = $this->variableRegex . $glue . $this->variableRegex;
-        $this->variableLoopRegex = '/\{\{\s*(' . $this->variableRegex . ')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
-        $this->variableTagRegex = '/\{\{\s*(' . $this->variableRegex . ')\s*\}\}/m';
+        $this->variableRegex = $glue === '\\.' ? '[a-zA-Z0-9_'.$glue.']+' : '[a-zA-Z0-9_\.'.$glue.']+';
+        $this->callbackNameRegex = $this->variableRegex.$glue.$this->variableRegex;
+        $this->variableLoopRegex = '/\{\{\s*('.$this->variableRegex.')\s*\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+        $this->variableTagRegex = '/\{\{\s*('.$this->variableRegex.')\s*\}\}/m';
 
-        $this->callbackBlockRegex = '/\{\{\s*(' . $this->variableRegex . ')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
+        $this->callbackBlockRegex = '/\{\{\s*('.$this->variableRegex.')(\s.*?)\}\}(.*?)\{\{\s*\/\1\s*\}\}/ms';
 
-        $this->recursiveRegex = '/\{\{\s*\*recursive\s*(' . $this->variableRegex . ')\*\s*\}\}/ms';
+        $this->recursiveRegex = '/\{\{\s*\*recursive\s*('.$this->variableRegex.')\*\s*\}\}/ms';
 
         $this->noparseRegex = '/\{\{\s*noparse\s*\}\}(.*?)\{\{\s*\/noparse\s*\}\}/ms';
 
         $this->conditionalRegex = '/\{\{\s*(if|unless|elseif|elseunless)\s*((?:\()?(.*?)(?:\))?)\s*\}\}/ms';
         $this->conditionalElseRegex = '/\{\{\s*else\s*\}\}/ms';
         $this->conditionalEndRegex = '/\{\{\s*endif\s*\}\}/ms';
-        $this->conditionalExistsRegex = '/(\s+|^)exists\s+(' . $this->variableRegex . ')(\s+|$)/ms';
+        $this->conditionalExistsRegex = '/(\s+|^)exists\s+('.$this->variableRegex.')(\s+|$)/ms';
         $this->conditionalNotRegex = '/(\s+|^)not(\s+|$)/ms';
 
         $this->regexSetup = true;
@@ -538,13 +562,15 @@ class Parser extends Rex {
     /**
      * Extracts the noparse text so that it is not parsed.
      *
-     * @param  string $text The text to extract from
+     * @param string $text The text to extract from
+     *
      * @return string
      */
-    protected function extractNoparse($text) {
+    protected function extractNoparse($text)
+    {
         /**
          * $matches[][0] is the raw noparse match
-         * $matches[][1] is the noparse contents
+         * $matches[][1] is the noparse contents.
          */
         if (preg_match_all($this->noparseRegex, $text, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
@@ -558,12 +584,14 @@ class Parser extends Rex {
     /**
      * Extracts the looped tags so that we can parse conditionals then re-inject.
      *
-     * @param  string $text The text to extract from
+     * @param string $text The text to extract from
+     *
      * @return string
      */
-    protected function extractLoopedTags($text, $data = array(), $callback = null) {
+    protected function extractLoopedTags($text, $data = [], $callback = null)
+    {
         /**
-         * $matches[][0] is the raw match
+         * $matches[][0] is the raw match.
          */
         if (preg_match_all($this->callbackBlockRegex, $text, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
@@ -585,13 +613,15 @@ class Parser extends Rex {
      * Extracts text out of the given text and replaces it with a hash which
      * can be used to inject the extractions replacement later.
      *
-     * @param  string $type        Type of extraction
-     * @param  string $extraction  The text to extract
-     * @param  string $replacement Text that will replace the extraction when re-injected
-     * @param  string $text        Text to extract out of
+     * @param string $type        Type of extraction
+     * @param string $extraction  The text to extract
+     * @param string $replacement Text that will replace the extraction when re-injected
+     * @param string $text        Text to extract out of
+     *
      * @return string
      */
-    protected function createExtraction($type, $extraction, $replacement, $text) {
+    protected function createExtraction($type, $extraction, $replacement, $text)
+    {
         $hash = md5($replacement);
         self::$extractions[$type][$hash] = $replacement;
 
@@ -601,10 +631,12 @@ class Parser extends Rex {
     /**
      * Injects all of the extractions.
      *
-     * @param  string $text Text to inject into
+     * @param string $text Text to inject into
+     *
      * @return string
      */
-    protected function injectExtractions($text, $type = null) {
+    protected function injectExtractions($text, $type = null)
+    {
         if ($type === null) {
             foreach (self::$extractions as $type => $extractions) {
                 foreach ($extractions as $hash => $replacement) {
@@ -634,12 +666,14 @@ class Parser extends Rex {
      * Takes a dot-notated key and finds the value for it in the given
      * array or object.
      *
-     * @param  string       $key     Dot-notated key to find
-     * @param  array|object $data    Array or object to search
-     * @param  mixed        $default Default value to use if not found
+     * @param string       $key     Dot-notated key to find
+     * @param array|object $data    Array or object to search
+     * @param mixed        $default Default value to use if not found
+     *
      * @return mixed
      */
-    protected function getVariable($key, $data, $default = null) {
+    protected function getVariable($key, $data, $default = null)
+    {
         if (strpos($key, $this->scopeGlue) === false) {
             $parts = explode('.', $key);
         } else {
@@ -669,28 +703,33 @@ class Parser extends Rex {
     /**
      * Evaluates the PHP in the given string.
      *
-     * @param  string $text Text to evaluate
+     * @param string $text Text to evaluate
+     *
      * @return string
      */
-    protected function parsePhp($text) {
+    protected function parsePhp($text)
+    {
         ob_start();
-        $result = eval('?>' . $text . '<?php ');
+        $result = eval('?>'.$text.'<?php ');
 
         if ($result === false) {
             $output = 'You have a syntax error in your Lex tags. The offending code: ';
-            throw new ParsingException($output . str_replace(array('?>', '<?php '), '', $text));
+
+            throw new ParsingException($output.str_replace(['?>', '<?php '], '', $text));
         }
 
         return ob_get_clean();
     }
 
     /**
-     * Parses a parameter string into an array
+     * Parses a parameter string into an array.
      *
      * @param   string  The string of parameters
+     *
      * @return array
      */
-    protected function parseParameters($parameters, $data, $callback) {
+    protected function parseParameters($parameters, $data, $callback)
+    {
         $this->conditionalData = $data;
         $this->inCondition = true;
         // Extract all literal string in the conditional to make it easier
@@ -701,10 +740,10 @@ class Parser extends Rex {
         }
 
         $parameters = preg_replace_callback(
-                '/(.*?\s*=\s*(?!__))(' . $this->variableRegex . ')/is', array($this, 'processParamVar'), $parameters
+                '/(.*?\s*=\s*(?!__))('.$this->variableRegex.')/is', [$this, 'processParamVar'], $parameters
         );
         if ($callback) {
-            $parameters = preg_replace('/(.*?\s*=\s*(?!\{\s*)(?!__))(' . $this->callbackNameRegex . ')(?!\s*\})\b/', '$1{$2}', $parameters);
+            $parameters = preg_replace('/(.*?\s*=\s*(?!\{\s*)(?!__))('.$this->callbackNameRegex.')(?!\s*\})\b/', '$1{$2}', $parameters);
             $parameters = $this->parseCallbackTags($parameters, $data, $callback);
         }
 
@@ -713,7 +752,7 @@ class Parser extends Rex {
         $this->inCondition = false;
 
         if (preg_match_all('/(.*?)\s*=\s*(\'|"|&#?\w+;)(.*?)(?<!\\\\)\2/s', trim($parameters), $matches)) {
-            $return = array();
+            $return = [];
             foreach ($matches[1] as $i => $attr) {
                 $return[trim($matches[1][$i])] = stripslashes($matches[3][$i]);
             }
@@ -721,16 +760,18 @@ class Parser extends Rex {
             return $return;
         }
 
-        return array();
+        return [];
     }
 
     /**
-     * Convert objects to arrays
-     * 
+     * Convert objects to arrays.
+     *
      * @param mixed $data
+     *
      * @return array
      */
-    public function toArray($data = array()) {
+    public function toArray($data = [])
+    {
         if ($data instanceof ArrayableInterface) {
             $data = $data->toArray();
         }
@@ -745,5 +786,4 @@ class Parser extends Rex {
 
         return $data;
     }
-
 }

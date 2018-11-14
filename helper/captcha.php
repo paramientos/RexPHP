@@ -16,7 +16,7 @@
  * Redistributions in binary form must reproduce the above copyright
   notice, this list of conditions and the following disclaimer in the
   documentation and/or other materials provided with the distribution.
- * Neither the name of Edward Eliot nor the names of its contributors 
+ * Neither the name of Edward Eliot nor the names of its contributors
   may be used to endorse or promote products derived from this software
   without specific prior written permission of Edward Eliot.
 
@@ -42,7 +42,7 @@
  */
 /* * ********************** Default Options ********************* */
 
-// start a PHP session - this class uses sessions to store the generated 
+// start a PHP session - this class uses sessions to store the generated
 // code. Comment out if you are calling already from your application
 //session_start();
 if (session_id() == '') {
@@ -71,8 +71,8 @@ define('CAPTCHA_AUDIO_PATH', '/tmp/'); // must be writeable by PHP process
 
 // don't edit below this line (unless you want to change the class!)
 
-class captcha {
-
+class captcha
+{
     protected $oImage;
     protected $aFonts;
     protected $iWidth;
@@ -91,15 +91,15 @@ class captcha {
     protected $sFileType;
     public $sCode = '';
 
-    function captcha() {
+    public function captcha()
+    {
         /*$this->config($aFonts = null, // array of TrueType fonts to use - specify full path
                 $iWidth = CAPTCHA_WIDTH, // width of image
                 $iHeight = CAPTCHA_HEIGHT // height of image)
         );*/
-        
     }
 
-    function config(
+    public function config(
     $aFonts = null, // array of TrueType fonts to use - specify full path
             $iWidth = CAPTCHA_WIDTH, // width of image
             $iHeight = CAPTCHA_HEIGHT // height of image
@@ -119,51 +119,68 @@ class captcha {
         $this->SetFileType(CAPTCHA_FILE_TYPE);
         $this->SetWidth($iWidth);
         $this->SetHeight($iHeight);
+
         return $this;
     }
 
-    function CalculateSpacing() {
+    public function CalculateSpacing()
+    {
         $this->iSpacing = (int) ($this->iWidth / $this->iNumChars);
+
         return $this;
     }
 
-    function SetWidth($iWidth) {
+    public function SetWidth($iWidth)
+    {
         $this->iWidth = $iWidth;
-        if ($this->iWidth > 500)
-            $this->iWidth = 500; // to prevent perfomance impact
+        if ($this->iWidth > 500) {
+            $this->iWidth = 500;
+        } // to prevent perfomance impact
         $this->CalculateSpacing();
+
         return $this;
     }
 
-    function SetHeight($iHeight) {
+    public function SetHeight($iHeight)
+    {
         $this->iHeight = $iHeight;
-        if ($this->iHeight > 200)
-            $this->iHeight = 200; // to prevent performance impact
+        if ($this->iHeight > 200) {
+            $this->iHeight = 200;
+        } // to prevent performance impact
         return $this;
     }
 
-    function SetNumChars($iNumChars) {
+    public function SetNumChars($iNumChars)
+    {
         $this->iNumChars = $iNumChars;
         $this->CalculateSpacing();
+
         return $this;
     }
 
-    function SetNumLines($iNumLines) {
+    public function SetNumLines($iNumLines)
+    {
         $this->iNumLines = $iNumLines;
+
         return $this;
     }
 
-    function DisplayShadow($bCharShadow) {
+    public function DisplayShadow($bCharShadow)
+    {
         $this->bCharShadow = $bCharShadow;
+
         return $this;
     }
 
-    function SetOwnerText($sOwnerText) {
+    public function SetOwnerText($sOwnerText)
+    {
         $this->sOwnerText = $sOwnerText;
+
         return $this;
     }
 
-    function SetCharSet($vCharSet) {
+    public function SetCharSet($vCharSet)
+    {
         // check for input type
         if (is_array($vCharSet)) {
             $this->aCharSet = $vCharSet;
@@ -173,9 +190,9 @@ class captcha {
                 $aCharSet = explode(',', $vCharSet);
 
                 // initialise array
-                $this->aCharSet = array();
+                $this->aCharSet = [];
 
-                // loop through items 
+                // loop through items
                 foreach ($aCharSet as $sCurrentItem) {
                     // a range should have 3 characters, otherwise is normal character
                     if (strlen($sCurrentItem) == 3) {
@@ -196,45 +213,59 @@ class captcha {
                 }
             }
         }
+
         return $this;
     }
 
-    function CaseInsensitive($bCaseInsensitive) {
+    public function CaseInsensitive($bCaseInsensitive)
+    {
         $this->bCaseInsensitive = $bCaseInsensitive;
+
         return $this;
     }
 
-    function SetBackgroundImages($vBackgroundImages) {
+    public function SetBackgroundImages($vBackgroundImages)
+    {
         $this->vBackgroundImages = $vBackgroundImages;
+
         return $this;
     }
 
-    function SetMinFontSize($iMinFontSize) {
+    public function SetMinFontSize($iMinFontSize)
+    {
         $this->iMinFontSize = $iMinFontSize;
+
         return $this;
     }
 
-    function SetMaxFontSize($iMaxFontSize) {
+    public function SetMaxFontSize($iMaxFontSize)
+    {
         $this->iMaxFontSize = $iMaxFontSize;
+
         return $this;
     }
 
-    function UseColour($bUseColour) {
+    public function UseColour($bUseColour)
+    {
         $this->bUseColour = $bUseColour;
+
         return $this;
     }
 
-    function SetFileType($sFileType) {
+    public function SetFileType($sFileType)
+    {
         // check for valid file type
-        if (in_array($sFileType, array('gif', 'png', 'jpeg'))) {
+        if (in_array($sFileType, ['gif', 'png', 'jpeg'])) {
             $this->sFileType = $sFileType;
         } else {
             $this->sFileType = 'jpeg';
         }
+
         return $this;
     }
 
-    function DrawLines() {
+    public function DrawLines()
+    {
         for ($i = 0; $i < $this->iNumLines; $i++) {
             // allocate colour
             if ($this->bUseColour) {
@@ -247,10 +278,12 @@ class captcha {
             // draw line
             imageline($this->oImage, rand(0, $this->iWidth), rand(0, $this->iHeight), rand(0, $this->iWidth), rand(0, $this->iHeight), $iLineColour);
         }
+
         return $this;
     }
 
-    function DrawOwnerText() {
+    public function DrawOwnerText()
+    {
         // allocate owner text colour
         $iBlack = imagecolorallocate($this->oImage, 0, 0, 0);
         // get height of selected font
@@ -266,10 +299,12 @@ class captcha {
 
         // reduce available height for drawing CAPTCHA
         $this->iHeight = $this->iHeight - $iOwnerTextHeight - 5;
+
         return $this;
     }
 
-    function GenerateCode() {
+    public function GenerateCode()
+    {
         // reset code
         $this->sCode = '';
 
@@ -290,10 +325,12 @@ class captcha {
         } else {
             $_SESSION[CAPTCHA_SESSION_ID] = $this->sCode;
         }
+
         return $this;
     }
 
-    function DrawCharacters() {
+    public function DrawCharacters()
+    {
         // loop through and write out selected number of characters
         for ($i = 0; $i < strlen($this->sCode); $i++) {
             // select random font
@@ -325,7 +362,7 @@ class captcha {
             $iAngle = rand(-30, 30);
 
             // get dimensions of character in selected font and text size
-            $aCharDetails = imageftbbox($iFontSize, $iAngle, $sCurrentFont, $this->sCode[$i], array());
+            $aCharDetails = imageftbbox($iFontSize, $iAngle, $sCurrentFont, $this->sCode[$i], []);
 
             // calculate character starting coordinates
             $iX = $this->iSpacing / 4 + $i * $this->iSpacing;
@@ -333,7 +370,7 @@ class captcha {
             $iY = $this->iHeight / 2 + $iCharHeight / 4;
 
             // write text to image
-            imagefttext($this->oImage, $iFontSize, $iAngle, $iX, $iY, $iTextColour, $sCurrentFont, $this->sCode[$i], array());
+            imagefttext($this->oImage, $iFontSize, $iAngle, $iX, $iY, $iTextColour, $sCurrentFont, $this->sCode[$i], []);
 
             if ($this->bCharShadow) {
                 $iOffsetAngle = rand(-30, 30);
@@ -341,13 +378,15 @@ class captcha {
                 $iRandOffsetX = rand(-5, 5);
                 $iRandOffsetY = rand(-5, 5);
 
-                imagefttext($this->oImage, $iFontSize, $iOffsetAngle, $iX + $iRandOffsetX, $iY + $iRandOffsetY, $iShadowColour, $sCurrentFont, $this->sCode[$i], array());
+                imagefttext($this->oImage, $iFontSize, $iOffsetAngle, $iX + $iRandOffsetX, $iY + $iRandOffsetY, $iShadowColour, $sCurrentFont, $this->sCode[$i], []);
             }
         }
+
         return $this;
     }
 
-    function WriteFile($sFilename) {
+    public function WriteFile($sFilename)
+    {
         if ($sFilename == '') {
             // tell browser that data is jpeg
             header("Content-type: image/$this->sFileType");
@@ -363,10 +402,12 @@ class captcha {
             default:
                 $sFilename != '' ? imagejpeg($this->oImage, $sFilename) : imagejpeg($this->oImage);
         }
+
         return $this;
     }
 
-    function create($sFilename = '') {
+    public function create($sFilename = '')
+    {
         // check for required gd functions
         if (!function_exists('imagecreate') || !function_exists("image$this->sFileType") || ($this->vBackgroundImages != '' && !function_exists('imagecreatetruecolor'))) {
             return false;
@@ -419,15 +460,15 @@ class captcha {
 
         return true;
     }
-	
-	
-	function get_code() {
-		 return !empty($_SESSION[CAPTCHA_SESSION_ID]) ? $_SESSION[CAPTCHA_SESSION_ID] : false;
-	}
-	
+
+    public function get_code()
+    {
+        return !empty($_SESSION[CAPTCHA_SESSION_ID]) ? $_SESSION[CAPTCHA_SESSION_ID] : false;
+    }
 
     // call this method statically
-    function Validate($sUserCode, $bCaseInsensitive = true) {
+    public function Validate($sUserCode, $bCaseInsensitive = true)
+    {
         if ($bCaseInsensitive) {
             $sUserCode = strtoupper($sUserCode);
         }
@@ -441,9 +482,4 @@ class captcha {
 
         return false;
     }
-
 }
-
-
-
-?>

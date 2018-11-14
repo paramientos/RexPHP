@@ -1,56 +1,63 @@
 <?php
 
 /** absolutely no required to extends to rex *** */
-class url {
-
+class url
+{
     /**
-     * 
      * @param string $url
-     * @param type $prefix
+     * @param type   $prefix
+     *
      * @return string
      */
-    function prefix($url, $prefix = 'http') {
-        if (!preg_match("~^(?:f|ht)tps?://~i", $url)) {
-            $url = $prefix . '://' . $url;
+    public function prefix($url, $prefix = 'http')
+    {
+        if (!preg_match('~^(?:f|ht)tps?://~i', $url)) {
+            $url = $prefix.'://'.$url;
         }
 
         return $url;
     }
 
-    function tiny_url($url) {
-        return file_get_contents("http://tinyurl.com/api-create.php?url=" . $url);
+    public function tiny_url($url)
+    {
+        return file_get_contents('http://tinyurl.com/api-create.php?url='.$url);
     }
 
-    function exist($url = NULL) {
+    public function exist($url = null)
+    {
         $ch = @curl_init($url);
-        @curl_setopt($ch, CURLOPT_HEADER, TRUE);
-        @curl_setopt($ch, CURLOPT_NOBODY, TRUE);
-        @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        $status = array();
+        @curl_setopt($ch, CURLOPT_HEADER, true);
+        @curl_setopt($ch, CURLOPT_NOBODY, true);
+        @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $status = [];
         preg_match('/HTTP\/.* ([0-9]+) .*/', @curl_exec($ch), $status);
-        return ($status[1] == 200);
+
+        return $status[1] == 200;
     }
 
-    function make_seo_name($title) {
+    public function make_seo_name($title)
+    {
         return preg_replace('/[^a-z0-9_-]/i', '', strtolower(str_replace(' ', '-', trim($title))));
     }
 
-    function get_keyword($url, $json = false) {
+    public function get_keyword($url, $json = false)
+    {
         $meta = get_meta_tags($url);
         $keywords = $meta['keywords'];
-// Split keywords
+        // Split keywords
         $keywords = explode(',', $keywords);
-// Trim them
+        // Trim them
         $keywords = array_map('trim', $keywords);
-// Remove empty values
+        // Remove empty values
         $keywords = array_filter($keywords);
+
         return $json ? json_encode($keywords) : $keywords;
     }
 
-    function status($link, $json = false) {
-
-        $http_status_codes = array(
+    public function status($link, $json = false)
+    {
+        $http_status_codes = [
             100 => 'Informational: Continue',
             101 => 'Informational: Switching Protocols',
             102 => 'Informational: Processing',
@@ -125,134 +132,150 @@ class url {
             511 => 'Server Error: Network Authentication Required',
             598 => 'Server Error: Network read timeout error',
             599 => 'Server Error: Network connect timeout error',
-        );
+        ];
 
         $ch = curl_init($link);
         curl_setopt($ch, CURLOPT_NOBODY, 1);
         $c = curl_exec($ch);
         $result = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        return $json ? json_encode(array($result, $http_status_codes[$result])) : array($result, $http_status_codes[$result]);
+
+        return $json ? json_encode([$result, $http_status_codes[$result]]) : [$result, $http_status_codes[$result]];
     }
 
-    function short_url($url) {
+    public function short_url($url)
+    {
         $length = strlen($url);
         if ($length > 45) {
             $length = $length - 30;
             $first = substr($url, 0, -$length);
             $last = substr($url, -15);
-            $new = $first . "[ ... ]" . $last;
+            $new = $first.'[ ... ]'.$last;
+
             return $new;
         } else {
             return $url;
         }
     }
 
-    function is_https() {
+    public function is_https()
+    {
         return
                 (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443;
     }
 
-    function get_full_url() {
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 ? $protocol = "https://" : $protocol = "http://";
-        return $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+    public function get_full_url()
+    {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 ? $protocol = 'https://' : $protocol = 'http://';
+
+        return $protocol.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
     }
 
     /**
-     * http://www.jonasjohn.de/snippets/php/secure-redirect.htm
+     * http://www.jonasjohn.de/snippets/php/secure-redirect.htm.
+     *
      * @param type $url
      * @param type $exit
      */
-    function safe_redirect($url, $exit = true) {
+    public function safe_redirect($url, $exit = true)
+    {
 
         // Only use the header redirection if headers are not already sent
         if (!headers_sent()) {
-
             header('HTTP/1.1 301 Moved Permanently');
-            header('Location: ' . $url);
+            header('Location: '.$url);
 
             // Optional workaround for an IE bug (thanks Olav)
-            header("Connection: close");
+            header('Connection: close');
         }
 
         // HTML/JS Fallback:
         // If the header redirection did not work, try to use various methods other methods
 
-        print '<html>';
-        print '<head><title>Redirecting you...</title>';
-        print '<meta http-equiv = "Refresh" content = "0;url=' . $url . '" />';
-        print '</head>';
-        print '<body onload = "location.replace(\'' . $url . '\')">';
+        echo '<html>';
+        echo '<head><title>Redirecting you...</title>';
+        echo '<meta http-equiv = "Refresh" content = "0;url='.$url.'" />';
+        echo '</head>';
+        echo '<body onload = "location.replace(\''.$url.'\')">';
 
-        // If the javascript and meta redirect did not work, 
+        // If the javascript and meta redirect did not work,
         // the user can still click this link
-        print 'You should be redirected to this URL:<br />';
-        print "<a href=\"$url\">$url</a><br /><br />";
+        echo 'You should be redirected to this URL:<br />';
+        echo "<a href=\"$url\">$url</a><br /><br />";
 
-        print 'If you are not, please click on the link above.<br />';
+        echo 'If you are not, please click on the link above.<br />';
 
-        print '</body>';
-        print '</html>';
+        echo '</body>';
+        echo '</html>';
 
         // Stop the script here (optional)
-        if ($exit)
+        if ($exit) {
             exit();
+        }
     }
 
     /**
      * http://webdeveloperplus.com/php/21-really-useful-handy-php-code-snippets/
      * Create user friendly post slugs from title string to use within URLs.
+     *
      * @param type $string
+     *
      * @return type
      */
-    function user_friendly_url($string) {
+    public function user_friendly_url($string)
+    {
         $slug = preg_replace('/[^A-Za-z0-9-]+/', '-', $string);
+
         return $slug;
     }
 
-    public function link($trace, $args = '') {
+    public function link($trace, $args = '')
+    {
         if (!FRIENDLY_URL) {
-            $url = BASE_URL . 'index.php?trace=' . $trace;
+            $url = BASE_URL.'index.php?trace='.$trace;
 
             if ($args) {
-                $url .= str_replace('&', '&amp;', '&' . ltrim($args, '&'));
+                $url .= str_replace('&', '&amp;', '&'.ltrim($args, '&'));
             }
         } else {//if true
-            $url = BASE_URL . $trace;
+            $url = BASE_URL.$trace;
             if ($args) {
-                $sum = "";
-                $arg = str_replace('&', '&amp;', '&' . ltrim($args, '&'));
+                $sum = '';
+                $arg = str_replace('&', '&amp;', '&'.ltrim($args, '&'));
                 //echo $arg;
                 $exp = explode('&amp;', $arg);
                 foreach ($exp as $e) {
                     if ($e != '') {
                         $get = explode('=', $e);
-                        $sum.='/' . $get[1];
+                        $sum .= '/'.$get[1];
                     }
                 }
 
-                $url = $url . $sum;
+                $url = $url.$sum;
             }
         }
+
         return $url;
     }
 
-    function js_inline_link($url, $args = '') {
-        $code = "javascript: document.location='" . $this->link($url, $args) . "'";
+    public function js_inline_link($url, $args = '')
+    {
+        $code = "javascript: document.location='".$this->link($url, $args)."'";
+
         return $code;
     }
 
-    function js_outline_link($url, $args = '') {
-        $code = "location='" . $this->link($url, $args) . "'";
+    public function js_outline_link($url, $args = '')
+    {
+        $code = "location='".$this->link($url, $args)."'";
+
         return $code;
     }
 
-    function redirect($url, $args = "", $statusCode = 303) {
+    public function redirect($url, $args = '', $statusCode = 303)
+    {
         //$go= "<script>location='" . $this->link($url, $args) . "';</script>";
         // echo $go;
-        header('Location: ' . $this->link($url, $args), true, $statusCode);
+        header('Location: '.$this->link($url, $args), true, $statusCode);
         // die();
     }
-
 }
-
-?>

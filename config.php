@@ -11,8 +11,6 @@ define('charset', 'utf8');
 // optional
 define('port', 3306);
 
-
-
 define('THEME_NAME', 'default');
 
 define('TEMPLATE_EXTENSION', '.tpl');
@@ -23,8 +21,6 @@ define('TEMPLATE_EXTENSION', '.tpl');
  * do not write like that 'app/view/path to...' no need to the 'view' word.
  */
 define('DEFAULT_PAGE', 'common/home');
-
-
 
 date_default_timezone_set('Europe/Istanbul');
 
@@ -38,19 +34,12 @@ date_default_timezone_set('Europe/Istanbul');
 define('HEADER_FILE', 'common/header');
 define('FOOTER_FILE', 'common/footer');
 
+define('BASE_URL', 'http://localhost/rex/');
 
+define('SHOW_ERROR', true);
 
-
-define("BASE_URL", 'http://localhost/rex/');
-
-
-define("SHOW_ERROR", true);
-
-define("FRIENDLY_URL", false);
-
+define('FRIENDLY_URL', false);
 
 define('LOGIN_URL', 'common/login');
 
-
 define('404_PAGE', 'common/404');
-?>

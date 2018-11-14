@@ -1,4 +1,6 @@
-<?php namespace Lex;
+<?php
+
+namespace Lex;
 
 /**
  * Part of the Lex Template Parser.
@@ -9,22 +11,20 @@
  */
 class ArrayableObjectExample implements ArrayableInterface
 {
-	
-	/**
-	 * Attributes
-	 * 
-	 * @var array
-	 */ 
-	private $attributes = array('foo' => 'bar');
+    /**
+     * Attributes.
+     *
+     * @var array
+     */
+    private $attributes = ['foo' => 'bar'];
 
-	/**
-	 * Define how the object will be converted to an array
-	 * 
-	 * @return array
-	 */ 
-	public function toArray()
-	{
-		return $this->attributes;
-	}
-
+    /**
+     * Define how the object will be converted to an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->attributes;
+    }
 }
