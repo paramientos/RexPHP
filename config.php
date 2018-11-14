@@ -1,5 +1,6 @@
 <?php
 
+/* CONFIG FILE */
 
 define('database_type', 'mysqli');
 define('database_name', '');
