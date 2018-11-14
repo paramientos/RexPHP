@@ -1,6 +1,6 @@
 <?php
 
-/******** CONFIG FILE **********/
+/******** CONFIG FILE FOR APP **********/
 
 define('database_type', 'mysqli');
 define('database_name', '');
