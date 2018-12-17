@@ -479,7 +479,7 @@ class Rex {
      * @access public 
      * SILENCE IS GOLDEN
      */
-    public function rex() {
+    public function __construct() {
         $this->ladies_first();
     }
 
